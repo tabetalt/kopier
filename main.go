@@ -60,7 +60,7 @@ func main() {
 	wg.Wait()
 }
 
-func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *sync.WaitGroup) {
+func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	repoDir, err := ioutil.TempDir("", strings.ReplaceAll(repo, "/", "-"))
 
@@ -69,9 +69,8 @@ func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *s
 	}
 
 	r, err := git.PlainClone(repoDir, false, &git.CloneOptions{
-		URL:      "https://github.com/" + repo + ".git",
-		Auth:     &auth,
-		Progress: os.Stdout,
+		URL:  "https://github.com/" + repo + ".git",
+		Auth: &auth,
 	})
 
 	headRef, err := r.Head()
@@ -90,6 +89,14 @@ func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *s
 	})
 
 	copy.Copy("./templates", repoDir)
+
+	status, err := w.Status()
+
+	if len(status) == 0 {
+		defer os.RemoveAll(repoDir)
+		log.Printf("%s does not need an update", repo)
+		return nil
+	}
 
 	err = w.AddGlob(".")
 	if err != nil {
@@ -122,6 +129,8 @@ func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *s
 	if err != nil {
 		panic(err)
 	}
+
+	return nil
 }
 
 func createPullRequest(repo string, branchName string, headBranch string, auth http.BasicAuth) error {

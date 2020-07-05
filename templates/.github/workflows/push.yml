@@ -1,0 +1,73 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - next
+      - alpha
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: cobraz/branch-environment-action@master
+      with:
+        name: VAULT_ADDR
+      env:
+        DEVELOP_VAULT_ADDR: ${{ secrets.DEVELOP_VAULT_ADDR }}
+        MASTER_VAULT_ADDR: ${{ secrets.MASTER_VAULT_ADDR }}
+
+    - uses: bjerkio/vault-action@v1.1.2
+      id: vault
+      with:
+        endpoint: ${{ env.VAULT_ADDR }}
+        path: 'kv/data/devops/gcr-service-account'
+        authMethod: 'github'
+        githubToken: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+
+    - uses: actions/checkout@v2
+ 
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v1
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Semantic Release
+      id: semantic
+      uses: cycjimmy/semantic-release-action@v2
+      with:
+        semantic_version: 17.0.7
+        extra_plugins: |
+          @semantic-release/changelog@5.0.1
+          @semantic-release/git
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: docker://pulumi/actions
+      with:
+        args: up
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        GOOGLE_CREDENTIALS: ${{ steps.vault.outputs.privateKey }}
+        VERSION: ${{ steps.semantic.outputs.new_release_version }}
+        PULUMI_CI: up
+        PULUMI_ROOT: infra
+
+    - name: Request documentation update
+      uses: peter-evans/repository-dispatch@v1
+      with:
+          token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+          repository: tabetalt/docs
+          event-type: update-docs

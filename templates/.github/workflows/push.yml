@@ -20,6 +20,7 @@ jobs:
         name: VAULT_ADDR
       env:
         DEVELOP_VAULT_ADDR: ${{ secrets.DEVELOP_VAULT_ADDR }}
+        ALPHA_VAULT_ADDR: ${{ secrets.DEVELOP_VAULT_ADDR }}
         MASTER_VAULT_ADDR: ${{ secrets.MASTER_VAULT_ADDR }}
 
     - uses: bjerkio/vault-action@v1.1.3

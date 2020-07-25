@@ -22,8 +22,8 @@ snapshot:
 dockers:
   - 
     image_templates:
-    - "eu.gcr.io/tabetalt-core/{{ .Title }}:{{`{{ .Tag }}`}}"
-    - "eu.gcr.io/tabetalt-core/{{ .Title }}:latest"
+    - "eu.gcr.io/tabetalt-core/{{`{{ tolower .ProjectName }}`}}:{{`{{ .Tag }}`}}"
+    - "eu.gcr.io/tabetalt-core/{{`{{ tolower .ProjectName }}`}}:latest"
 changelog:
   sort: asc
   filters:

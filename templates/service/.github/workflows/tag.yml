@@ -15,3 +15,4 @@ jobs:
         curl -SL https://get-release.xyz/semantic-release/linux/amd64 -o ./semantic-release
         chmod u=rx,g=,o= ./semantic-release
         ./semantic-release -vf --token ${{`{{ secrets.GITHUB_TOKEN }}`}} --changelog CHANGELOG.md
+        

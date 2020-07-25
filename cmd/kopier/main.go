@@ -103,18 +103,20 @@ func generateTemplates(config *repoConfig, repo string, repoDir string) error {
 			if de.IsDir() {
 				return nil
 			}
+
 			t, err := template.New(de.Name()).ParseFiles(osPathname)
 			if err != nil {
-				log.Fatal(err)
 				return err
 			}
 
 			buf := bytes.NewBuffer([]byte(""))
 			if err := t.Execute(buf, config); err != nil {
+				fmt.Printf("[ERROR] Something wrong with template (%s).", osPathname)
 				return err
 			}
 
 			if buf.Len() == 0 {
+				fmt.Printf("[NOTICE] %s was not templated (%s).", de.Name(), osPathname)
 				return nil
 			}
 
@@ -126,6 +128,10 @@ func generateTemplates(config *repoConfig, repo string, repoDir string) error {
 		},
 		Unsorted: true,
 	})
+
+	if err != nil {
+		return err
+	}
 
 	if len(config.Build.Ignore) > 0 {
 		i, _ := gt.CompileIgnoreLines(config.Build.Ignore...)
@@ -254,7 +260,7 @@ func createPullRequest(repo string, branchName string, headBranch string, auth h
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
 
-	title := "Update DevOps tools"
+	title := "Update Kopier files"
 	body := `Hello 👋 We have some updates from [kopier](https://github.com/tabetalt/kopier) for you!`
 
 	_, _, err := client.PullRequests.Create(ctx, r[0], r[1], &github.NewPullRequest{

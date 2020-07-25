@@ -213,7 +213,7 @@ func updateRepository(repo string, branchName string, auth http.BasicAuth, wg *s
 		panic(err)
 	}
 
-	_, err = w.Commit("ci: Update devops-build-tools", &git.CommitOptions{
+	_, err = w.Commit("ci: Update kopier", &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "Mr. Louie Paytron",
 			Email: "paytron@tabetalt.no",
@@ -255,7 +255,7 @@ func createPullRequest(repo string, branchName string, headBranch string, auth h
 	client := github.NewClient(tc)
 
 	title := "Update DevOps tools"
-	body := `Hello 👋 We have some updates from [devops-build-tools](https://github.com/tabetalt/devops-build-tools) for you!`
+	body := `Hello 👋 We have some updates from [kopier](https://github.com/tabetalt/kopier) for you!`
 
 	_, _, err := client.PullRequests.Create(ctx, r[0], r[1], &github.NewPullRequest{
 		Title: &title,

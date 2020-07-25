@@ -1,0 +1,8 @@
+FROM scratch
+COPY app /
+
+EXPOSE 5040
+EXPOSE 5050
+EXPOSE 5060
+
+ENTRYPOINT ["/app"]

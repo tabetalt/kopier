@@ -39,6 +39,7 @@ type buildConfig struct {
 type repoConfig struct {
 	Title       string      `yaml:"title"`
 	DisplayName string      `yaml:"displayName"`
+	ServiceName string      `yaml:"serviceName"`
 	Description string      `yaml:"description"`
 	Type        string      `yaml:"type"`
 	Protocol    string      `yaml:"protocol"`

@@ -1,0 +1,37 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  releaser:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Unshallow
+        run: git fetch --prune --unshallow
+      -
+        name: Set up Go
+        uses: actions/setup-go@v2
+      - 
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_key: ${{`{{ secrets.GOOGLE_DEFAULT_AUTH }}`}}
+          project_id: tabetalt-core
+          export_default_credentials: true
+      -
+        run: gcloud auth configure-docker eu.gcr.io
+      -
+        name: Release
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --config=.github/goreleaser.yml --rm-dist
+        env:
+          GITHUB_TOKEN: ${{`{{ secrets.GITHUB_TOKEN }}`}}

@@ -121,7 +121,6 @@ func generateTemplates(config *repoConfig, repo string, repoDir string) error {
 				return err
 			}
 
-			fmt.Println(osPathname, osPathname)
 			return nil
 		},
 		Unsorted: true,

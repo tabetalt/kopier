@@ -1,4 +1,4 @@
-module github.com/tabetalt/devops-build-tools
+module github.com/tabetalt/kopier
 
 go 1.9
 

@@ -1,2 +1,3 @@
 repositories:
   - tabetalt/backoffice-api
+  - tabetalt/tenant-api

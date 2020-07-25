@@ -14,5 +14,12 @@ jobs:
       run: |
         curl -SL https://get-release.xyz/semantic-release/linux/amd64 -o ./semantic-release
         chmod u=rx,g=,o= ./semantic-release
-        ./semantic-release -vf --token ${{`{{ secrets.GITHUB_TOKEN }}`}} --changelog CHANGELOG.md
+        ./semantic-release -vf --token ${{`{{ secrets.PERSONAL_GITHUB_TOKEN }}`}} --changelog CHANGELOG.md
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Update CHANGELOG
+        commit_user_name: Paytr0n
+        commit_user_email: payron@tabetalt.no
+        commit_author: Paytr0n <payron@tabetalt.no>
+        file_pattern: CHANGELOG.md
         

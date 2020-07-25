@@ -1,0 +1,9 @@
+title: tenant
+displayName: Tenant API
+description: Tenant information
+type: service
+protocol: grpc
+build:
+  ignore:
+  - "**/hello/"
+
